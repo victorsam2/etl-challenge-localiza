@@ -45,10 +45,17 @@ python flows/pipeline.py
    - `receiving_address` e `location_region` → `.str.strip()`, vazios/"0" viram `NaN`.
    - **Dedupe** por (`timestamp`,`receiving_address`,`transaction_type`,`amount`).
 3. **Data Quality (automatizado)**: validações mínimas
-   - `timestamp`, `transaction_type`, `amount` não nulos após limpeza.
-   - `amount >= 0`.
-   - conformidade mínima de 98%; abaixo disso o job sai com código 2 (falha).
-   - Métricas em `data/dq_metrics.json`.
+   - Duas verificações são realizadas:
+     1. **Camada raw**: validações no arquivo original, sem normalização ou tratamento.
+   - Regras aplicadas:
+     - Conformidade mínima de 98%; abaixo disso o job sai com código 2 (falha). Escrevendo a camada raw sem tratamentos para analises de erro
+   - Métricas em `data/dq_metrics_pre.json`.
+     2. **Após limpeza**: validações no dataset tratado.
+   - Regras aplicadas:
+     - `timestamp`, `transaction_type`, `amount` não nulos.
+     - `amount >= 0`. 
+     - Conformidade mínima de 99.5%; abaixo disso o job sai com código 2 (falha). Escrevendo a camada tratada para analises de erro.
+   - Métricas em `data/dq_metrics_post.json`.
 4. **Transformações (DuckDB)**:
    - Tabela `stg_transactions` (limpa) em `data/results.duckdb`.
    - **Resultado 1**: `region_risk_avg` (média de `risk_score` por `location_region`, desc.).
@@ -57,4 +64,10 @@ python flows/pipeline.py
 
 ## Variáveis de ambiente
 - `INPUT_CSV` (default: `./input/df_fraud_credit.csv`)
+
+## Arquitetura do Pipeline
+
+Abaixo está a arquitetura do pipeline de ETL:
+
+![Arquitetura do Pipeline](docs/Arquitetura.svg)
 
