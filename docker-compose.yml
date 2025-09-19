@@ -1,0 +1,24 @@
+services:
+  prefect:
+    image: prefecthq/prefect:2-python3.11
+    ports:
+      - "4200:4200"
+    command: ["prefect", "server", "start", "--host", "0.0.0.0"]
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request,sys; urllib.request.urlopen('http://localhost:4200/health', timeout=2); print('ok')\""]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  etl:
+    build: .
+    environment:
+      - INPUT_CSV=./input/df_fraud_credit.csv
+      - PREFECT_API_URL=http://prefect:4200/api
+    depends_on:
+      prefect:
+        condition: service_healthy
+    volumes:
+      - ./:/app
+    working_dir: /app
+    command: ["python", "flows/pipeline.py"]

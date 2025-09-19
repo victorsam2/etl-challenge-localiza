@@ -1,0 +1,6 @@
+data/
+curated/
+*.duckdb
+*.csv
+__pycache__/
+.venv/
