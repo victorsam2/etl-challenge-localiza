@@ -1,22 +1,22 @@
 # ETL Local (Desafio Localiza)
 
-Stack mínima: **Python + Pandas + DuckDB** com tarefas em estilo **Prefect** (sem servidor), **Data Quality** automatizado e **conteinerização via Docker**.  
-Entrada **local** (sem URL, lendo da pasta `./input`). Saídas em `./curated` e um banco **DuckDB** (`./data/results.duckdb`).
+Solução desenvolvida para o desafio técnico de Engenharia de Dados, com foco em simplicidade, qualidade e reprodutibilidade.
+
+# 🛠️ Arquitetura
+
+- Orquestração → Prefect 2 (UI em http://localhost:4200)
+- Camada analítica → DuckDB (banco colunar leve, em arquivo único .duckdb)
+- Transformações → SQL dentro do DuckDB
+- Entrega → Resultados exportados em CSV
 
 ## Estrutura
 ```
-.
 ├─ docker-compose.yml
 ├─ Dockerfile
 ├─ requirements.txt
-├─ README.md
-├─ flows/
-│  └─ pipeline.py
-├─ input/
-│  └─ df_fraud_credit.csv           # coloque seu CSV aqui
-├─ data/
-│  ├─ results.duckdb                # gerado pelo pipeline
-│  └─ dq_metrics.json               # métricas de qualidadee
+├─ flows/pipeline.py
+├─ input/df_fraud_credit.csv    # dataset de entrada (não versionado)
+├─ data/results.duckdb          # banco gerado
 └─ curated/
    ├─ region_risk_avg.csv
    └─ top3_recent_sales_by_receiving.csv
